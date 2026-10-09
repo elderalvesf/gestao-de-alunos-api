@@ -1,0 +1,97 @@
+{
+  "login": [
+    {
+      "descricao": "deve retornar 200 e um token quando o admin informar credenciais válidas",
+      "usarCredenciaisAdmin": true,
+      "statusEsperado": 200,
+      "roleEsperada": "admin"
+    },
+    {
+      "descricao": "deve retornar 200 e um token quando um aluno informar credenciais válidas",
+      "email": "ana.souza@example.com",
+      "senha": "123456",
+      "statusEsperado": 200,
+      "roleEsperada": "aluno"
+    },
+    {
+      "descricao": "deve retornar 401 quando a senha informada for inválida",
+      "email": "admin@escola.com",
+      "senha": "senha-incorreta",
+      "statusEsperado": 401,
+      "erroEsperado": "E-mail ou senha inválidos."
+    },
+    {
+      "descricao": "deve retornar 401 quando o e-mail não estiver cadastrado",
+      "email": "nao.existe@example.com",
+      "senha": "123456",
+      "statusEsperado": 401,
+      "erroEsperado": "E-mail ou senha inválidos."
+    },
+    {
+      "descricao": "deve retornar 400 quando a senha não for informada",
+      "email": "admin@escola.com",
+      "statusEsperado": 400,
+      "erroEsperado": "Os campos \"email\" e \"senha\" são obrigatórios."
+    }
+  ],
+  "cadastroAluno": [
+    {
+      "descricao": "deve cadastrar um aluno com todos os campos obrigatórios",
+      "aluno": { "nome": "João Pereira", "emailBase": "joao.pereira", "senha": "senha123" },
+      "statusEsperado": 201
+    },
+    {
+      "descricao": "deve cadastrar uma aluna com nome acentuado",
+      "aluno": { "nome": "Mariana Conceição", "emailBase": "mariana.conceicao", "senha": "abc@2024" },
+      "statusEsperado": 201
+    },
+    {
+      "descricao": "deve retornar 400 quando a senha não for informada",
+      "aluno": { "nome": "Pedro Sem Senha", "emailBase": "pedro.semsenha" },
+      "statusEsperado": 400,
+      "erroEsperado": "Os campos \"nome\", \"email\", \"matricula\" e \"senha\" são obrigatórios."
+    },
+    {
+      "descricao": "deve retornar 400 quando o e-mail não for informado",
+      "aluno": { "nome": "Paula Sem Email", "senha": "senha123" },
+      "statusEsperado": 400,
+      "erroEsperado": "Os campos \"nome\", \"email\", \"matricula\" e \"senha\" são obrigatórios."
+    }
+  ],
+  "entregaTrabalho": [
+    {
+      "descricao": "deve registrar a entrega de um trabalho de Matemática",
+      "aluno": { "nome": "Lucas Almeida", "emailBase": "lucas.almeida", "senha": "senha123" },
+      "disciplinaId": "disciplina-matematica",
+      "matricularNaDisciplina": true,
+      "trabalho": { "titulo": "Lista de Exercícios 2", "descricao": "Exercícios de 1 a 15 do capítulo 3." },
+      "statusEsperado": 201
+    },
+    {
+      "descricao": "deve registrar a entrega de um trabalho de Programação Web",
+      "aluno": { "nome": "Beatriz Rocha", "emailBase": "beatriz.rocha", "senha": "senha123" },
+      "disciplinaId": "disciplina-programacao-web",
+      "matricularNaDisciplina": true,
+      "trabalho": { "titulo": "API REST com Express", "descricao": "CRUD de produtos com Express e MongoDB." },
+      "statusEsperado": 201
+    },
+    {
+      "descricao": "deve retornar 409 ao entregar trabalho de disciplina em que o aluno não está matriculado",
+      "aluno": { "nome": "Rafael Costa", "emailBase": "rafael.costa", "senha": "senha123" },
+      "disciplinaId": "disciplina-historia",
+      "matricularNaDisciplina": false,
+      "trabalho": { "titulo": "Resumo - Idade Média" },
+      "statusEsperado": 409,
+      "erroEsperado": "O aluno não está matriculado nesta disciplina."
+    },
+    {
+      "descricao": "deve retornar 400 ao entregar trabalho sem título",
+      "aluno": { "nome": "Fernanda Dias", "emailBase": "fernanda.dias", "senha": "senha123" },
+      "disciplinaId": "disciplina-matematica",
+      "matricularNaDisciplina": true,
+      "trabalho": { "descricao": "Trabalho enviado sem título." },
+      "statusEsperado": 400,
+      "erroEsperado": "Os campos \"disciplinaId\" e \"titulo\" são obrigatórios."
+    }
+  ]
+}

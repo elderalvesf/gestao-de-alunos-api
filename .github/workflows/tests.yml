@@ -2,9 +2,9 @@ name: Testes de API
 
 on:
   push:
-    branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -34,7 +34,23 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      - name: Criar arquivo .env a partir do .env.example
+        run: |
+          cp .env.example .env
+          sed -i 's#^MONGODB_URI=.*#MONGODB_URI=mongodb://127.0.0.1:27017/gestao-de-alunos-test#' .env
+
+      - name: Subir a API em segundo plano
+        run: |
+          nohup npm start > api.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/ > /dev/null && echo "API no ar" && exit 0
+            sleep 2
+          done
+          echo "A API não subiu a tempo" && cat api.log && exit 1
+
       - name: Executar testes
         run: npm test
-        env:
-          MONGODB_URI: mongodb://127.0.0.1:27017/gestao-de-alunos-test
+
+      - name: Logs da API
+        if: always()
+        run: cat api.log

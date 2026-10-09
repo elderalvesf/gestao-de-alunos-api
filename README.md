@@ -260,3 +260,60 @@ curl -X POST http://localhost:3000/api/alunos/aluno-ana-souza/trabalhos \
 
 > Novos registros criados via API recebem ids no formato UUID (gerados com
 > `crypto.randomUUID()`), diferente dos ids legíveis usados nos dados fake acima.
+
+## Testes automatizados
+
+Os testes de API usam **Mocha**, **SuperTest** e **Chai**, e fazem requisições HTTP para a API em
+execução (endereço definido em `BASE_URL`).
+
+### Estrutura
+
+```
+test/
+  fixtures/
+    dados.json        # massa de dados (Data-Driven Testing): cada item vira um caso de teste
+  helpers/
+    autenticacao.js    # obterTokenAdmin() e obterTokenAluno(email, senha)
+    dados.js           # carrega o dados.json
+    geradores.js       # gera e-mail/matrícula únicos a cada execução
+  login.test.js        # login de admin e aluno (sucesso e falhas)
+  alunos.test.js       # admin cadastra alunos
+  trabalhos.test.js    # admin cadastra e matricula o aluno -> aluno loga e entrega o trabalho
+```
+
+Para adicionar um novo cenário, basta incluir um novo objeto no array correspondente em
+`test/fixtures/dados.json` — nenhum código de teste precisa ser alterado.
+
+### Variáveis de ambiente (Dotenv)
+
+A API e os testes leem as configurações de um arquivo `.env` (carregado com **dotenv**). Crie o seu
+a partir do modelo:
+
+```bash
+cp .env.example .env
+```
+
+| variável      | uso                                              |
+|---------------|--------------------------------------------------|
+| `PORT`        | porta da API                                     |
+| `MONGODB_URI` | conexão com o MongoDB                            |
+| `JWT_SECRET`  | segredo usado para assinar os tokens             |
+| `BASE_URL`    | URL da API usada pelos testes                    |
+| `ADMIN_EMAIL` | e-mail do administrador usado pelos testes       |
+| `ADMIN_SENHA` | senha do administrador usado pelos testes        |
+
+### Executando
+
+```bash
+# terminal 1: suba a API
+npm start
+
+# terminal 2: rode os testes
+npm test
+```
+
+### Pipeline (GitHub Actions)
+
+O workflow [`.github/workflows/tests.yml`](.github/workflows/tests.yml) roda a cada push, em pull
+requests para `main` e manualmente (`workflow_dispatch`): sobe um MongoDB como serviço, cria o
+`.env` a partir do `.env.example`, inicia a API em segundo plano e executa `npm test`.
